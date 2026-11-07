@@ -1,0 +1,61 @@
+/* Marks. No literal colour here: see tokens.css. The line colour is --tc, which any [data-c] sets, so a
+   change of construction recolours a kept mark without redrawing it. Sizes are in px, which on an SVG with a viewBox
+   means stage px: the --fs-* variables would scale twice. */
+
+#marks-back { position: absolute; left: 0; top: 0; z-index: 2; overflow: visible; pointer-events: none; }
+
+.mk path, .mk circle, .mk rect { vector-effect: none; }
+
+/* ---- relations: rel decides stroke and ends, never colour */
+.mk-line { fill: none; stroke: var(--tc); stroke-width: 2.5; stroke-linecap: butt; stroke-linejoin: round; }
+.mk-fill { fill: var(--tc); stroke: none; }
+.mk-stroke { fill: none; stroke: var(--tc); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+.mk[data-rel="predicate"] .mk-line { stroke-width: 1.25; }
+.mk[data-rel="predicate"][data-rank="1"] .mk-line { stroke-width: 2; }
+.mk[data-rel="describes"] .mk-line { stroke-width: 2.5; stroke-dasharray: 18 9; }
+.mk[data-rel="governs"] .mk-line { stroke-width: 3; }
+.mk[data-rel="modifies"] .mk-line { stroke-width: 2; }
+.mk[data-rel="agrees"] .mk-line { stroke-width: 2.5; stroke-dasharray: 6 6; }
+.mk[data-rel="connects"] .mk-line { stroke-width: 3; stroke-dasharray: .1 8; stroke-linecap: round; }
+.mk[data-rel="introduces"] .mk-line { stroke-width: 3; }
+.mk[data-rel="resumes"] .mk-line { stroke-width: 3; stroke-dasharray: 14 6 2 6; }
+.mk[data-rel="candidate"] .mk-line { stroke-width: 2; stroke-dasharray: .1 7; stroke-linecap: round; }
+.mk[data-rank="1"]:not([data-rel="predicate"]) .mk-line { stroke-width: 6; }
+.mk[data-rank="1"][data-rel="connects"] .mk-line { stroke-dasharray: .1 14; }
+.mk[data-rank="1"][data-rel="describes"] .mk-line { stroke-dasharray: 26 13; }
+.mk[data-rank="1"][data-rel="agrees"] .mk-line { stroke-dasharray: 12 11; }
+.mk[data-rank="1"][data-rel="resumes"] .mk-line { stroke-dasharray: 22 10 3 10; }
+
+.mk-glyph[data-g="ring"] { stroke-width: 2.5; }
+.mk-glyph[data-g="cross"] { stroke-width: 3.5; }
+.mk[data-rel="introduces"] .mk-stroke { stroke-width: 3; }
+
+/* ---- construction lines: --tw × 72. font-size 1px turns the em of --tw into stage px */
+.mk-bl { font-size: 1px; fill: none; stroke: var(--tc); stroke-width: calc(var(--tw) * 72); stroke-linejoin: miter; stroke-linecap: square; }
+.mk[data-c="neutral"] .mk-bl { stroke-width: 1.5px; }
+.mk-bl[data-tl="dashed"] { stroke-dasharray: 14 8; stroke-linecap: butt; }
+.mk-bl[data-tl="dotted"] { stroke-dasharray: .1 9; stroke-linecap: round; }
+.mk-btie { fill: none; stroke: var(--tc); stroke-width: 2; stroke-dasharray: 6 6; }
+
+/* ---- the door */
+.mk-door { fill: none; stroke: var(--done); stroke-width: 3; stroke-linejoin: miter; }
+
+/* ---- text. Label 26 px, chip 24 px, both --font-label */
+.mk-label, .mk-chip-text {
+  font-family: var(--font-label); font-weight: 500;
+  fill: var(--tc); paint-order: stroke; stroke: var(--bg); stroke-width: 5px; stroke-linejoin: round;
+}
+.mk-label { font-size: 26px; }
+.mk-chip-text { font-size: 24px; }
+.mk-chip-text:not(.mk-plain) { stroke: none; }
+.mk-caps { font-variant-caps: small-caps; }
+.mk-note { fill: var(--muted); }
+.mk-chip { fill: var(--tc-soft); stroke: var(--tc); stroke-width: 1.5; }
+.mk-caret { fill: none; stroke: var(--tc); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---- gap ties, the participle ring, leaders */
+.mk-gap { fill: none; stroke: var(--tc); stroke-width: 1.5; }
+.mk-gap[data-line="dotted"] { stroke-width: 2.5; stroke-dasharray: .1 6; stroke-linecap: round; }
+.mk-ring { fill: none; stroke: var(--tc); stroke-width: 1.5; }
+.mk-leader { fill: none; stroke: var(--rule); stroke-width: 1; }

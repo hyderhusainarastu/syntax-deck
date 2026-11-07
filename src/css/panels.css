@@ -1,0 +1,317 @@
+/* Everything on screen that is not the moving Greek. Class list: the comment at the top of src/panels/index.mjs.
+   No literal colour here: see tokens.css. Every panel is absolute at its own
+   numbers, so none can push another. Every box that holds text is a whole number of lines tall, which is how a
+   panel is never cut through a line. */
+
+:root {
+  --y-ribbon: 96; --y-spine: 596; --y-ledger: 746; --y-reason: 888; --y-end: 1056;
+  --x-edge: 48; --x-reason-r: 1230; --x-rail: 1290; --x-rail-r: 1872; --spine-pitch: 46; --spine-w: 1824;
+}
+
+#ui {
+  --xo: calc((100vw - 1920 * var(--u)) / 2);
+  position: absolute;
+  inset: 0;
+  color: var(--fg);
+  pointer-events: none;
+}
+
+#ui > * { pointer-events: none; }
+#ui > .overlay { pointer-events: auto; }
+
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+:focus-visible { outline: calc(3 * var(--u)) solid var(--lit); outline-offset: calc(3 * var(--u)); }
+.grc { font-family: var(--font-greek); }
+
+/* ---- ribbon: heading and sub on the left, tick map, then the key. Ink only; no Greek. ---- */
+#ribbon {
+  position: absolute;
+  top: 0; left: calc(var(--x-edge) * var(--u) + var(--xo)); width: calc(var(--spine-w) * var(--u)); height: calc(var(--y-ribbon) * var(--u));
+  display: flex; align-items: center; gap: calc(36 * var(--u));
+}
+
+.rb-title { flex: none; max-width: 42%; }
+.rb-head { margin: 0; color: var(--fg); font: 400 calc(40 * var(--u))/calc(46 * var(--u)) var(--font-body); white-space: nowrap; }
+.rb-sub { margin: 0; color: var(--muted); font: 400 calc(24 * var(--u))/calc(30 * var(--u)) var(--font-label); white-space: nowrap; }
+
+.rb-ticks { flex: 1 1 0; min-width: 0; display: flex; align-items: flex-end; gap: calc(3 * var(--u)); height: calc(46 * var(--u)); }
+.rb-tick { display: block; flex: 0 1 calc(12 * var(--u)); min-width: calc(2 * var(--u)); height: calc(16 * var(--u)); box-sizing: border-box; border: calc(1 * var(--u)) solid var(--rule); background: transparent; }
+.rb-tick[data-scope] { height: calc(26 * var(--u)); border-color: var(--muted); }
+.rb-tick[data-tick="parsed"] { background: var(--tc, var(--fg)); border-color: var(--tc, var(--fg)); }
+.rb-tick[data-f] { height: calc(44 * var(--u)); outline: calc(2 * var(--u)) solid var(--lit); outline-offset: calc(1 * var(--u)); }
+.rb-tick[data-wing] { outline: calc(2 * var(--u)) dashed var(--muted); outline-offset: calc(1 * var(--u)); }
+.rb-tick[data-first] { margin-left: calc(12 * var(--u)); }
+
+.rb-key { flex: none; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0 calc(18 * var(--u)); max-width: 34%; margin: 0; padding: 0; list-style: none; font: 400 calc(24 * var(--u))/calc(30 * var(--u)) var(--font-label); }
+.rb-kl {
+  text-decoration-line: underline;
+  text-decoration-style: var(--tl, solid);
+  text-decoration-color: var(--tc, var(--muted));
+  text-decoration-thickness: max(calc(var(--tw, .05em) * 1.6), 0.01px);
+  text-underline-offset: .2em;
+}
+.rb-k[data-c="neutral"] .rb-kl { text-decoration: none; }
+
+/* ---- English spine. Slots are absolute and never move; a slot holds its widest form's width. ---- */
+#en {
+  position: absolute;
+  left: calc(var(--x-edge) * var(--u) + var(--xo)); top: calc(var(--y-spine) * var(--u));
+  width: calc(var(--spine-w) * var(--u)); height: calc(150 * var(--u));
+  color: var(--fg); overflow: hidden;
+}
+
+.en-slots { position: absolute; inset: 0; }
+
+.slot {
+  position: absolute;
+  display: block;
+  box-sizing: border-box;
+  height: calc(var(--spine-pitch) * var(--u));
+  font: 400 var(--fs-en)/calc(var(--spine-pitch) * var(--u)) var(--font-body);
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.slot[data-state="off"] { visibility: hidden; }
+.slot[data-state="blank"] { color: var(--tc, var(--muted)); letter-spacing: .04em; }
+.slot[data-state="blank"][data-glyph] { color: var(--fg); letter-spacing: 0; }
+.slot[data-state="prov"] { color: var(--muted); }
+
+/* the type-colour underscore, from the construction's own line */
+.slot[data-c]:not([data-state="off"]):not([data-glyph]):not([data-c="neutral"]) {
+  text-decoration-line: underline;
+  text-decoration-style: var(--tl, solid);
+  text-decoration-color: var(--tc);
+  text-decoration-thickness: var(--tw, .04em);
+  text-underline-offset: .12em;
+  text-decoration-skip-ink: none;
+}
+
+.slot[data-new] { color: var(--lit); }
+
+#en[data-mode="running"] .en-stems, #en[data-mode="running"] .en-ties { display: none; }
+
+.en-ties { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+.en-stem { fill: none; stroke: var(--rule); stroke-width: 2; }
+.en-tie { stroke: var(--tc, var(--fg)); }
+.en-tie[data-c="neutral"] { --tc: var(--fg); }
+.en-head { fill: var(--tc, var(--fg)); stroke: var(--tc, var(--fg)); stroke-width: 2.5; stroke-linejoin: round; }
+.en-head.open { fill: none; }
+
+/* ---- home and final: running English below the Greek, 34 px, pitch 44, 1824 wide ---- */
+#homeen {
+  position: absolute;
+  left: calc(var(--x-edge) * var(--u) + var(--xo)); top: calc(590 * var(--u)); width: calc(var(--spine-w) * var(--u));
+  margin: 0; color: var(--fg); font: 400 calc(34 * var(--u))/calc(44 * var(--u)) var(--font-body);
+}
+.he-s { margin: 0; display: inline; }
+.he-s + .he-s::before { content: ' '; }
+
+/* ---- ledger: rows band 750-880, at most 3 ---- */
+#parse {
+  position: absolute;
+  left: calc(var(--x-edge) * var(--u) + var(--xo)); top: calc(750 * var(--u));
+  width: calc(var(--spine-w) * var(--u)); height: calc(130 * var(--u));
+  overflow: hidden;
+}
+
+.pl-list { margin: 0; padding: 0; }
+
+.pl-row {
+  display: grid;
+  grid-template-columns: calc(250 * var(--u)) calc(160 * var(--u)) calc(160 * var(--u)) calc(480 * var(--u)) calc(200 * var(--u)) minmax(0, 1fr);
+  column-gap: calc(16 * var(--u));
+  align-items: baseline;
+  height: calc(130 * var(--u) / var(--n, 3));   /* the band is 130 stage px: 1 row has 4 lines, 2 rows 2, 3 rows 1 */
+  border-top: calc(1 * var(--u)) solid var(--rule);
+  color: var(--fg);
+  font: 400 calc(28 * var(--u))/calc(40 * var(--u)) var(--font-label);
+}
+.pl-row:first-child { border-top: 0; }
+.pl-list[data-count="1"] { --n: 1; }
+.pl-list[data-count="2"] { --n: 2; }
+.pl-list[data-count="1"] .pl-src { line-height: 1.04; }
+.pl-c { min-width: 0; white-space: nowrap; }
+.pl-feat, .pl-gloss, .pl-src { white-space: normal; line-height: 1.14; }   /* a long source string wraps inside its row, never off its edge */
+.pl-form { font-family: var(--font-greek); font-size: 1.14em; line-height: 1.15; }
+.pl-lemma, .pl-gloss, .pl-pos, .pl-src, .pl-note { color: var(--muted); }
+.pl-src { font-size: .88em; }
+.pl-feat { color: var(--fg); }
+.pl-note { grid-column: 2 / -1; }
+.pl-row[data-restate] { opacity: .8; }
+
+/* Derivation row: five cells across the band */
+.dv-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 4fr) minmax(0, 4fr) minmax(0, 1.6fr) minmax(0, 3fr);
+  column-gap: calc(24 * var(--u));
+  height: 100%;
+  font-size: calc(26 * var(--u));
+}
+.dv-cell { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.dv-h { color: var(--muted); font: 400 calc(22 * var(--u))/calc(26 * var(--u)) var(--font-label); }
+.dv-v { color: var(--fg); font: 400 1em/1.25 var(--font-body); }
+.dv-form .dv-v { font-size: 1.15em; font-family: var(--font-greek); }
+
+/* ---- reason: 888-1056, 28 px, four lines of 40 ---- */
+#reason {
+  position: absolute;
+  left: calc(var(--x-edge) * var(--u) + var(--xo)); top: calc(var(--y-reason) * var(--u));
+  width: calc((var(--x-reason-r) - var(--x-edge)) * var(--u)); height: calc(160 * var(--u));
+  margin: 0; overflow: hidden;
+  color: var(--fg); font: 400 calc(28 * var(--u))/calc(40 * var(--u)) var(--font-label);   /* the 400-character budget is measured in Alegreya Sans */
+}
+
+/* ---- rail: 1290-1872 by 888-1056, 24 px, five lines of 33 ---- */
+#rail {
+  position: absolute;
+  left: calc(var(--x-rail) * var(--u) + var(--xo)); top: calc(var(--y-reason) * var(--u));
+  width: calc((var(--x-rail-r) - var(--x-rail)) * var(--u)); height: calc(168 * var(--u));
+  padding-left: calc(20 * var(--u)); border-left: calc(1 * var(--u)) solid var(--rule);
+  overflow: hidden;
+}
+.rail-list { margin: 0; padding: 0; list-style: none; font-size: calc(24 * var(--u)); }
+
+.cite { margin: 0; color: var(--fg); font: 400 1em/calc(28 * var(--u)) var(--font-label); }
+.gchip { display: inline-block; min-width: 1.3em; margin-right: .1em; text-align: center; border: calc(1 * var(--u)) solid var(--muted); color: var(--muted); font-weight: 500; line-height: 1.2; }
+.gchip[data-grade="C"] { border-color: var(--amber); color: var(--amber); }
+.cite-label { font-weight: 500; }
+.cite-via, .cite-loc { color: var(--muted); }
+.cite-quote { color: var(--fg); font-family: var(--font-body); }
+.chip { display: inline-block; font: 500 calc(23 * var(--u))/1 var(--font-label); white-space: nowrap; }
+.chip[data-chip="amber"] { padding: calc(3 * var(--u)) calc(9 * var(--u)); border: calc(1 * var(--u)) solid var(--amber); border-radius: calc(999 * var(--u)); color: var(--amber); }
+
+/* ---- callouts: beside the word on the boards ---- */
+#callout { position: absolute; inset: 0; }
+.co {
+  position: absolute; left: 0; top: 0; margin: 0;
+  max-width: calc(520 * var(--u)); white-space: nowrap;
+  color: var(--amber); font: 500 calc(26 * var(--u))/calc(32 * var(--u)) var(--font-label);
+}
+.co[data-placed="0"] { visibility: hidden; }
+
+/* ---- the skipped words ---- */
+#skipped { position: absolute; inset: 0; }
+.sk-who {
+  position: absolute; left: calc(var(--x-edge) * var(--u) + var(--xo)); top: calc(116 * var(--u)); width: calc(184 * var(--u));
+  text-align: right; color: var(--muted); font: 400 calc(28 * var(--u))/calc(34 * var(--u)) var(--font-label);
+}
+.sk-text { position: absolute; left: calc(var(--x-edge) * var(--u) + var(--xo)); top: calc(606 * var(--u)); width: calc(var(--spine-w) * var(--u)); }
+.sk-turn { margin: 0; color: var(--fg); font: 400 calc(34 * var(--u))/calc(46 * var(--u)) var(--font-body); }
+.sk-sp { color: var(--muted); font: 500 calc(26 * var(--u))/1 var(--font-label); }
+
+/* ---- overlays: map, step index, help, source page. The stage stays faintly present behind them. ---- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--veil);
+  outline: none;
+}
+
+.overlay {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: calc(64 * var(--u)) calc(48 * var(--u));
+}
+
+.ov-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: calc(1180 * var(--u));
+  max-height: 100%;
+  padding: calc(22 * var(--u)) calc(32 * var(--u)) calc(26 * var(--u));
+  background: var(--bg);
+  border: calc(1 * var(--u)) solid var(--rule);
+  overflow: hidden;
+}
+
+#index .ov-panel, #help .ov-panel { max-width: calc(860 * var(--u)); }
+
+.ov-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: calc(12 * var(--u));
+}
+
+.ov-title { margin: 0; color: var(--fg); font: 400 calc(40 * var(--u))/1.1 var(--font-body); }
+
+.ov-close {
+  width: calc(44 * var(--u));
+  height: calc(44 * var(--u));
+  color: var(--muted);
+  font: 400 calc(36 * var(--u))/1 var(--font-label);
+}
+
+.ov-close:hover { color: var(--fg); }
+
+/* step index */
+.ix-input {
+  flex: none;
+  width: 100%;
+  margin-bottom: calc(10 * var(--u));
+  padding: calc(8 * var(--u)) calc(10 * var(--u));
+  background: transparent;
+  border: calc(1 * var(--u)) solid var(--rule);
+  border-radius: 0;
+  color: var(--fg);
+  font: 400 var(--fs-parse)/1.3 var(--font-label);
+}
+
+.ix-input::placeholder { color: var(--muted); opacity: 1; }
+
+.ix-list { flex: 1 1 auto; min-height: 0; margin: 0; padding: 0; list-style: none; overflow: hidden auto; }
+
+.ix-btn {
+  display: grid;
+  grid-template-columns: calc(70 * var(--u)) minmax(0, 1fr) auto;
+  column-gap: calc(14 * var(--u));
+  align-items: baseline;
+  width: 100%;
+  padding: calc(5 * var(--u)) calc(8 * var(--u));
+  font: 400 var(--fs-parse)/1.3 var(--font-body);
+  text-align: left;
+}
+
+.ix-btn:hover, .ix-item[aria-selected="true"] .ix-btn { background: var(--hover); }
+.ix-num, .ix-id { color: var(--muted); font: 400 calc(26 * var(--u))/1.3 var(--font-label); font-variant-numeric: tabular-nums; }
+.ix-item[aria-current="step"] .ix-num { color: var(--lit); }
+.ix-empty { margin: calc(6 * var(--u)) 0 0; color: var(--muted); font: 400 var(--fs-parse)/1.3 var(--font-label); }
+
+/* help */
+.hp-keys { margin: 0; }
+
+.hp-row {
+  display: grid;
+  grid-template-columns: calc(300 * var(--u)) minmax(0, 1fr);
+  column-gap: calc(18 * var(--u));
+  padding: calc(5 * var(--u)) 0;
+  border-top: calc(1 * var(--u)) solid var(--rule);
+}
+
+.hp-row dt, .hp-row dd { margin: 0; font: 400 calc(26 * var(--u))/1.3 var(--font-label); }
+.hp-row dd { color: var(--muted); }
+kbd { font: inherit; }
+.hp-notice { margin-top: calc(14 * var(--u)); padding-top: calc(8 * var(--u)); border-top: calc(1 * var(--u)) solid var(--rule); }
+.hp-notice-title { margin: 0 0 calc(4 * var(--u)); color: var(--muted); font: 700 calc(22 * var(--u))/1.3 var(--font-label); }
+.hp-notice p { margin: calc(3 * var(--u)) 0; color: var(--muted); font: 400 calc(22 * var(--u))/1.35 var(--font-label); }
+
+/* ---- the source view's pop-up-blocked toast sets its look inline; here it takes the deck's tokens.
+   The view itself is another document with its own inline CSS: nothing in src/css reaches it. ---- */
+#pl-sources-toast {
+  background: var(--fg) !important;
+  color: var(--bg) !important;
+  font-family: var(--font-label) !important;
+  font-size: var(--fs-source) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* A wrapping source string starts at the row top and never pushes the band taller; rows in the band clip nothing but their own overflow. */
+.pl-src { align-self: start; }
+.pl-row { overflow: hidden; }
+.rail-list[data-tight] .cite { line-height: 1.16; }

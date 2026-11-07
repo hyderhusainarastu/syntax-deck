@@ -1,0 +1,68 @@
+/* Every colour in the deck lives in this file: stage.css and panels.css hold
+   no literal colour, so a new look means replacing the two theme blocks and the wash blocks.
+   Dark is the default on :root; light is html[data-theme="light"]; html.wash raises the scrim and the contrast.
+   The dark scrim is .7: on the world's brightest frame (dust in the `form` cue, #FFE5B3) .58 gives body text 4.8:1; .7 gives 7.1:1. */
+
+:root {
+  --u: min(calc(100vw / 1920), calc(100vh / 1080));
+}
+
+:root, html[data-theme="dark"] {
+  --bg: #120D1F; --fg: #F8F1E4; --muted: #C9BFD4; --rule: #4C4066;
+  --scrim: rgba(18, 13, 31, .7); --lit: #FFD98A; --amber: #FFBE5C; --done: #B9E4A6;
+  --world-bg: #241636; --world-light: #FFC873; --world-dust: #FFE7B8;
+  --c-finite: #FFDB66;  --c-finite-soft: #41362D;
+  --c-ptc: #86D6FF;     --c-ptc-soft: #29354C;
+  --c-conj: #FFC188;    --c-conj-soft: #413134;
+  --c-gabs: #6FE8C0;    --c-gabs-soft: #25393F;
+  --c-indst: #E9B1E8;   --c-indst-soft: #3D2E47;
+  --c-analogy: #BCC8FF; --c-analogy-soft: #34324C;
+  --c-neutral: #D2CBDB; --c-neutral-soft: #383345;
+  --font-greek: 'Gentium Book Plus', serif;
+  --font-body: 'Gentium Book Plus', serif;
+  --font-label: 'Alegreya Sans', 'Gentium Book Plus', sans-serif;   /* Gentium catches any Greek in a label */
+  --fs-focus: calc(96 * var(--u)); --fs-full: calc(38 * var(--u)); --fs-en: calc(40 * var(--u));
+  --fs-parse: calc(28 * var(--u)); --fs-source: calc(24 * var(--u)); --fs-gloss: calc(26 * var(--u));
+  --fs-tag: calc(28 * var(--u)); --fs-chip: calc(24 * var(--u)); --fs-label: calc(26 * var(--u));
+}
+
+html[data-theme="light"] {
+  --bg: #FFFEFA; --fg: #17111F; --muted: #544A60; --rule: #D9D0C2;
+  --scrim: rgba(255, 254, 250, .8); --lit: #7A4A00; --amber: #7D4B00; --done: #355E1A;
+  --world-bg: #FFF2CF; --world-light: #FFCB57; --world-dust: #E8B44A;
+  --c-finite: #6A4A00;  --c-finite-soft: #ECE7DE;
+  --c-ptc: #00557C;     --c-ptc-soft: #DEE9EE;
+  --c-conj: #7A3000;    --c-conj-soft: #EEE4DE;
+  --c-gabs: #005F47;    --c-gabs-soft: #DEEAE7;
+  --c-indst: #7A1C7A;   --c-indst-soft: #EEE1EE;
+  --c-analogy: #3A3EA6; --c-analogy-soft: #E5E6F3;
+  --c-neutral: #4C4556; --c-neutral-soft: #E8E7E9;
+}
+
+/* Projector washout: the world recedes, the ink goes to the limit of each theme. */
+html.wash:not([data-theme="light"]) {
+  --scrim: rgba(18, 13, 31, .86); --fg: #FFFFFF; --muted: #E6DFEE; --rule: #7A6C96;
+}
+html.wash[data-theme="light"] {
+  --scrim: rgba(255, 254, 250, .93); --fg: #000000; --muted: #352B40; --rule: #A89E90;
+}
+
+/* Derived surfaces. Built only from the tokens above, so they follow any direction. */
+:root {
+  --hover: color-mix(in srgb, var(--fg) 8%, transparent);
+  --veil: color-mix(in srgb, var(--bg) 90%, transparent);
+  --plane-near: var(--bg);
+  --plane-far: color-mix(in srgb, var(--bg) 88%, var(--world-bg));
+  --glow: color-mix(in srgb, var(--world-light) 46%, transparent);
+  --select-bg: color-mix(in srgb, var(--lit) 34%, transparent);
+}
+
+/* One colour and one line per construction type. The line is what survives colour-vision deficiency and
+   washout: stage.css uses --tl and --tw on the word, and the same grammar on the bracket. */
+[data-c="finite"]  { --tc: var(--c-finite);  --tc-soft: var(--c-finite-soft);  --tl: solid;  --tw: .055em; }
+[data-c="ptc"]     { --tc: var(--c-ptc);     --tc-soft: var(--c-ptc-soft);     --tl: solid;  --tw: .03em; }
+[data-c="conj"]    { --tc: var(--c-conj);    --tc-soft: var(--c-conj-soft);    --tl: dashed; --tw: .05em; }
+[data-c="gabs"]    { --tc: var(--c-gabs);    --tc-soft: var(--c-gabs-soft);    --tl: wavy;   --tw: .035em; }
+[data-c="indst"]   { --tc: var(--c-indst);   --tc-soft: var(--c-indst-soft);   --tl: dotted; --tw: .06em; }
+[data-c="analogy"] { --tc: var(--c-analogy); --tc-soft: var(--c-analogy-soft); --tl: double; --tw: .03em; }
+[data-c="neutral"] { --tc: var(--c-neutral); --tc-soft: var(--c-neutral-soft); --tl: solid;  --tw: 0em; }

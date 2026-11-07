@@ -1,0 +1,31 @@
+{
+  "name": "syntax-deck",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "compile": "node tools/compile-steps.mjs",
+    "build": "node tools/build.mjs",
+    "build:strict": "node tools/build.mjs --strict",
+    "normalize": "node tools/normalize-harvests.mjs",
+    "merge": "node tools/merge-parses.mjs",
+    "check:text": "node tools/check-text.mjs",
+    "check:parse": "node tools/check-parse.mjs",
+    "check:cites": "node tools/check-cites.mjs",
+    "qa": "node tools/qa.mjs",
+    "pdf": "node tools/pdf.mjs"
+  },
+  "devDependencies": {
+    "@fontsource/gentium-book-plus": "5.2.5",
+    "esbuild": "0.28.2",
+    "gsap": "3.15.0",
+    "three": "0.186.1"
+  },
+  "description": "Engine and build tools for animated, offline, word-by-word syntax decks",
+  "license": "MIT",
+  "optionalDependencies": {
+    "playwright": "1.62.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
