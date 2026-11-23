@@ -102,6 +102,8 @@ Anyone who uses this with outside sources is responsible for following each sour
 Before you present a deck: open the built file from disk on the presenting machine, with the network off, and press
 through every step once. Check the projector resolution and that the fonts render.
 
+For a fuller list, see the [talk preflight checklist](https://github.com/hyderhusainarastu/palimnote-templates/blob/main/checklists/talk-preflight.md).
+
 ## Related
 
 - [palimnote-tools](https://github.com/hyderhusainarastu/palimnote-tools): catalogue of the small tools.
