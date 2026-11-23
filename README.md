@@ -16,11 +16,65 @@ Work in progress. This repository cannot yet build a deck on its own, because no
 included. The data model currently assumes up to four sentences and will be generalised.
 The `--stub` and `--scope` options of the tools need a fixture or data that is not included here. A `/new-deck` command for any text, language packs and a worked example will follow.
 
-## Use from an AI coding agent
+## Works with
 
-Agents (Codex, Claude Code, Cursor, Gemini CLI, Copilot) read `AGENTS.md`, which holds the deck data schema, the build
-and check commands, and the rules for what not to edit. `CLAUDE.md`, `GEMINI.md` and `.github/copilot-instructions.md`
-only point to it.
+Any tool that can run Node and read a repository. The build is a plain command line, so the assistant only needs to
+read files and run commands.
+
+| Surface | How | Status |
+|---|---|---|
+| Codex | reads `AGENTS.md` | pointer file in repo |
+| Claude Code | reads `CLAUDE.md`, which points to `AGENTS.md` | pointer file in repo |
+| Cursor | reads `AGENTS.md` | pointer file in repo |
+| Gemini CLI | reads `GEMINI.md`, which points to `AGENTS.md` | pointer file in repo |
+| GitHub Copilot | reads `.github/copilot-instructions.md`, which points to `AGENTS.md` | pointer file in repo |
+| ChatGPT, Claude.ai, Gemini (chat) | paste the data schema from `AGENTS.md` and ask for data files | manual; you run the commands |
+| No assistant | `npm run ...` by hand | works |
+
+## Quick start
+
+Common to every surface:
+
+```
+npm ci
+npm test
+npm run check:example
+```
+
+Per surface, point the assistant at this repository and give it the same task. It will find `AGENTS.md`.
+
+- Codex: `codex "Read AGENTS.md. Check examples/hello with npm run check:example, then explain the data files."`
+- Claude Code: `claude "Read AGENTS.md, run npm test, and describe the deck data layout."`
+- Cursor: open the folder; the agent loads `AGENTS.md`. Ask it to run `npm run check:example`.
+- Gemini CLI: `gemini "Read AGENTS.md and run npm run check:example."`
+- Copilot: in the agent chat, ask it to follow `.github/copilot-instructions.md` and run `npm test`.
+- Chat apps: paste the "Deck data layout" section of `AGENTS.md`, describe your text, and save the JSON it returns under `data/`.
+
+## Example
+
+`examples/hello/` holds an invented Greek sentence (one token file, an empty gap file, one tree). This command checks it:
+
+```
+$ npm run check:example
+ok   check-text: 0 failure(s), 0 warning(s)
+```
+
+That is the only check the example covers. It has no parses, English slots or sources, so `npm run build` does not
+run on it, and no screenshot is included. To build a deck you supply the full data set listed in `AGENTS.md`.
+
+## How it differs
+
+Slide tools show a finished diagram. This one keeps every word of the text on one stage and moves it between states,
+and it records the basis for each parse. The output is one HTML file with no network request, so it opens from disk
+at a venue with no connection.
+
+## Limits
+
+- Engine only: no complete worked deck and no text data ship here.
+- The checks expect Greek text (a Latin letter in a token fails `check:text`) and up to four sentences.
+- `build`, `qa` and `pdf` need the dependencies from `npm ci`. `qa` and `pdf` also need a Playwright browser.
+- `--stub` needs a fixture that is not included.
+- The tests cover `check-text` only. The build and the engine have no automated tests yet.
 
 ## What is here
 
@@ -33,7 +87,7 @@ only point to it.
 
 ## Requirements
 
-Node 18 or later. Install with `npm ci`. Playwright is an optional dependency, used only by `npm run qa` and
+Node 20 or later (developed on Node 24; CI runs 20, 22 and 24; Node 18 is not tested). Install with `npm ci`. Playwright is an optional dependency, used only by `npm run qa` and
 `npm run pdf`; set `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1` to install without downloading a browser.
 
 ## Data and notices
@@ -45,19 +99,13 @@ Anyone who uses this with outside sources is responsible for following each sour
 
 ## Presenting
 
-Before you present a deck, run through the talk pre-flight checklist in
-[palimnote-templates](https://github.com/hyderhusainarastu/palimnote-templates/blob/main/checklists/talk-preflight.md).
-Open the built file from disk on the presenting machine and press through every step once.
-
-## Example
-
-`examples/hello/` shows the shape of the data files with an invented English sentence. It is an illustration only: it has not
-been built or validated, and the current checks expect Greek text (see its README).
+Before you present a deck: open the built file from disk on the presenting machine, with the network off, and press
+through every step once. Check the projector resolution and that the fonts render.
 
 ## Related
 
 - [palimnote-tools](https://github.com/hyderhusainarastu/palimnote-tools): catalogue of the small tools.
-- [palimnote-templates](https://github.com/hyderhusainarastu/palimnote-templates): templates and checklists, including the talk pre-flight.
+- [palimnote-templates](https://github.com/hyderhusainarastu/palimnote-templates): templates and checklists, and checklists.
 - [interactive-critical-edition](https://github.com/hyderhusainarastu/interactive-critical-edition): a related offline, single-page scholarly edition.
 
 Keywords: syntax slides, sentence parsing, grammar visualisation, agreement, word-by-word animation, offline HTML presentation,

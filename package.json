@@ -3,6 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "node --test tests/check-text.test.mjs",
+    "check:example": "node tools/check-text.mjs --scope s1 --root examples/hello",
     "compile": "node tools/compile-steps.mjs",
     "build": "node tools/build.mjs",
     "build:strict": "node tools/build.mjs --strict",
@@ -26,6 +28,6 @@
     "playwright": "1.62.1"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

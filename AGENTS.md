@@ -5,13 +5,13 @@ Engine and build tools that turn deck data into one offline HTML file of animate
 ## Using this in your project
 
 - Status: engine only. No text data or worked deck ships here, so `npm run build` fails until you supply data.
-- Install: `npm ci` (Node 18+). Set `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1` unless you need `qa` or `pdf`.
+- Install: `npm ci` (Node 20+). Set `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1` unless you need `qa` or `pdf`.
 - Commands (exit 0 = ok, 1 = a check failed, nothing is written on failure):
   - `npm run compile`: `src/steps/*.mjs` to `build/steps.json`.
   - `npm run check:text`, `check:parse`, `check:cites`: validate data.
   - `npm run build` (`build:strict` makes warnings fatal): writes `build/deck.html`, one file, no network at runtime.
   - `npm run qa`, `npm run pdf`: need Playwright and a browser.
-  - Flags: `--scope s1` (first sentence only), `--steps <dir>` (probe a folder of step files), `--out <file>`, `--stub` (needs a fixture not included).
+  - Flags: `--root <dir>` (read `data/` from another folder, e.g. `examples/hello`), `--scope s1` (first sentence only), `--steps <dir>` (probe a folder of step files), `--out <file>`, `--stub` (needs a fixture not included).
 - Deck data layout, relative to the repo root (read from `tools/lib/data.mjs`, `tools/lib/refs.mjs`):
   - `data/locked/tokens.json`: array of `{id, g, s, raw, text, post}`. `id` is `s1.01` to `s4.99` (sentence, position), `g` the 1-based global order, `post` the trailing punctuation.
   - `data/locked/gap.json`: `{gapSentence: [{id: "g.01", text, post}], variant: {id: "v.01", text} | null}`.
@@ -27,7 +27,7 @@ Engine and build tools that turn deck data into one offline HTML file of animate
 
 ## Working on this repo
 
-- Setup: `npm ci`. Test: there is no test suite yet; run `for f in tools/*.mjs tools/lib/*.mjs src/*/*.mjs; do node --check "$f"; done` for a syntax check (offline).
+- Setup: `npm ci`. Test: `npm test` (offline, no dependencies needed; covers `check-text`). Example check: `npm run check:example`. Syntax check: `for f in tools/*.mjs tools/lib/*.mjs src/*/*.mjs; do node --check "$f"; done`.
 - Edit `src/` (engine, panels, world, presenter, css) and `tools/`. Do not edit `package-lock.json` by hand or `licenses/`.
 - `build/`, `node_modules/` and `projects/` are git-ignored; do not commit them.
 - The checks currently assume Greek text and up to four sentences (a Latin letter in a token fails `check:text`).

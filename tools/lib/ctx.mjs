@@ -7,10 +7,12 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 export const FILES = ['overture', 's1', 's2', 's3', 's4', 'close'];
 
 // --stub swaps the data/steps root to docs/stub (a small fixture, not part of this repository) and implies sentence S1; --scope s1 limits to S1.
-// Neither flag changes any rule. Locked data, src/ (except steps), assets and fonts always come from ROOT.
+// --root <dir> points the data at another folder. Neither flag changes any rule. Locked data, src/ (except steps), assets and fonts always come from ROOT.
 export function makeCtx(argv = process.argv.slice(2), root = ROOT) {
   const flag = (n) => argv.includes(n);
   const val = (n) => { const i = argv.indexOf(n); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : null; };
+  const rootArg = val('--root');
+  if (rootArg) root = path.resolve(rootArg);   // --root <dir>: read data/ from another folder (e.g. examples/hello)
   const stub = flag('--stub');
   const scopeArg = (val('--scope') || 'all').toLowerCase();
   if (!['all', 's1'].includes(scopeArg)) throw new Error(`unsupported --scope ${scopeArg} (use s1)`);

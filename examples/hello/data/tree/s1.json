@@ -1,8 +1,8 @@
 {
   "root": "S1",
   "nodes": [
-    { "id": "S1", "parent": null, "type": "finite", "label": "main clause", "tokens": ["s1.04"] },
-    { "id": "S1.a", "parent": "S1", "type": "neutral", "label": "subject", "tokens": ["s1.01", "s1.02", "s1.03"] },
-    { "id": "S1.b", "parent": "S1", "type": "neutral", "label": "object", "tokens": ["s1.05", "s1.06"] }
+    { "id": "S1", "parent": null, "type": "finite", "label": "main clause", "tokens": ["s1.05"] },
+    { "id": "S1.a", "parent": "S1", "type": "neutral", "label": "subject", "tokens": ["s1.01", "s1.02"] },
+    { "id": "S1.b", "parent": "S1", "type": "neutral", "label": "object", "tokens": ["s1.03", "s1.04"] }
   ]
 }
